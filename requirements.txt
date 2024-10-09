@@ -1,0 +1,15 @@
+dill==0.3.8
+datasets==2.18.0
+dm-tree
+pytz==2023.3
+fire==0.6.0
+wandb==0.16.5
+accelerate==0.28.0
+tqdm==4.64.1
+deepspeed==0.14.0
+evaluate==0.4.1
+scipy==1.10.1
+scikit-learn==1.2.1
+multiprocess==0.70.16
+transformers==4.40.1
+huggingface_hub
