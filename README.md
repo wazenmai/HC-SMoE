@@ -13,6 +13,19 @@ This repository is written based on the codes in the [GitHub](https://github.com
 ```
 pip install -r requirements.txt
 ```
+
+## Dataset Preparation
+Please download the C4 training data c4-train.00000-of-01024.json from [allenai/c4](https://huggingface.co/datasets/allenai/c4/blob/main/en/c4-train.00000-of-01024.json.gz).
+
+Then save it to path `hcsmoe/data/c4-train.00000-of-01024.json`.
+
+Or you can assign the path in [hcsmoe/evaluation/minipile.py](./hcsmoe/evaluation/minipile.py).
+```python
+DATASETS = {
+    'c4': lambda: load_dataset('json', data_files={'train': 'hcsmoe/data/c4-train.00000-of-01024.json'}, trust_remote_code=True),
+}
+```
+
 ## Experiments
 We provide the code script in `scripts/mixtral/run.sh` and `scripts/qwen/run.sh`. Change the setting in those files. Run the script file as follows.
 
