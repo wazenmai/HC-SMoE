@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="google-site-verification" content="j9HTkRmcgC7YMr2kNlRSikoFh3-uMfjxyV1QIDjywOM" />
+  
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Retraining-Free Merging of Sparse MoE via Hierarchical Clustering">
+  <meta name="keywords" content="Sparse Mixture-of-Experts, Merging, Compression">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HC-SMoE: Retraining-Free Merging of Sparse MoE via Hierarchical Clustering</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/hc_icon.png" type="image/x-icon">
+  <link rel="stylesheet" href="./static/css/custumize.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$','$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        tags: 'ams',
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+  
+    window.addEventListener('load', (event) => {
+        document.querySelectorAll("mjx-container").forEach(function(x){
+          x.parentElement.classList += 'has-jax'})
+      });
+  
+  </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">HC-SMoE: Retraining-Free Merging of Sparse MoE via Hierarchical Clustering</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://blog.wazenmai.com/about/">I-Chun Chen</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="https://j3soon.github.io/">Hsu-Shen Liu</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://j3soon.github.io/">Wei-Fang Sun</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://chen-hao-chao.github.io/">Chen-Hao Chao</a><sup>3</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.linkedin.com/in/yenchanghsu">Yen-Chang Hsu</a><sup>4</sup>,</span>
+            <span class="author-block">
+              <a href="https://elsalab.ai/about">Chun-Yi Lee</a><sup>5</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup> National Tsing Hua University,</span>
+            <span class="author-block"><sup>2</sup> NVIDIA AI Technology Center,</span>
+            <span class="author-block"><sup>3</sup> University of Toronto,</span></br>
+            <span class="author-block"><sup>3</sup> Samsung Research America,</span>
+            <span class="author-block"><sup>4</sup> National Taiwan University</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2410.08589"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. --->
+              <span class="link-block">
+                <a href="https://youtu.be/tnAyPkIMeJ0?si=zXAKDAfKWQdL9l1y"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/wazenmai/HC-SMoE"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+
+          <div class="column has-text-centered">
+            <!-- &#9654 --> <b>Keywords: </b>
+              <div class="w3-tag w3-round w3-blue w3-border w3-border-white">
+                Sparse Mixture-of-Experts
+              </div>
+              <div class="w3-tag w3-round w3-blue w3-border w3-border-white">
+                Merging
+              </div>
+              <div class="w3-tag w3-round w3-blue w3-border w3-border-white">
+                Compression
+              </div></br>
+            <!-- </div> -->
+            <div class="w3-bar w3-border w3-light-grey" style="height:10px; visibility:hidden;"></div>
+            <b>Venue: </b>
+            <div class="w3-tag w3-round w3-dark-grey w3-border w3-border-white">
+              International Conference on Machine Learning (ICML 2025)
+            </div>
+          </div></br>
+
+          <div class="w3-bar w3-border w3-light-grey"></div>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified scroll-wrapper">
+          Sparse Mixture-of-Experts (SMoE) models represent 
+          a significant advancement in large language
+          model (LLM) development through their efficient
+          parameter utilization. These models achieve 
+          substantial performance improvements at reduced
+          inference costs. However, the deployment of
+          SMoE models faces constraints from extensive
+          memory requirements of expert components in
+          resource-limited environments. To address these
+          limitations, this paper introduces <b>Hierarchical
+          Clustering for Sparsely activated Mixture of Experts (HC-SMoE), 
+          a task-agnostic expert merging framework for parameter reduction without
+          retraining.</b> HC-SMoE introduces a novel hierarchical clustering approach 
+          based on expert outputs to ensure merging robustness independent
+          of routing decisions. The proposed output-based
+          clustering method enables effective capture of
+          functional relationships between experts for largescale architectures. 
+          We provide theoretical analysis and comprehensive evaluations across 
+          multiple zero-shot language tasks to demonstrate HCSMoE’s effectiveness in state-of-the-art models
+          including Qwen and Mixtral. The experimental results validate HC-SMoE’s 
+          superior performance and practical applicability for real-world deployments.<br><br><br><br>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/tnAyPkIMeJ0?si=S8Pk1JSsgXgXKbqM"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div></br>
+    <!--/ Paper video. -->
+    <div class="w3-bar w3-border w3-light-grey"></div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title" style="text-indent: -0.35em;">Overview</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>This blog post offers an introduction to our proposed HC-SMoE model compression method. 
+          <!-- The contents are essentially the same as our paper, but some sections have been removed for conciseness. -->
+          We begin with an overview of SMoE architecture and current SMoE compression methods.
+          Next, we introduce the pipeline of HC-SMoE and the rationale of why it works. 
+          Finally, we present experimental results to demonstrate the effectiveness of the proposed method.</p>
+      </div>
+    </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title" style="text-indent: -0.35em;">Background</h2>
+    <h3 style="text-indent: -0.35em; padding-bottom: 1em;">Sparsely Activated Mixture-of-Experts (SMoE)</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        
+        <p>The SMoE model comprises multiple SMoE layers, each of which contains a set of expert neural networks and a router network. 
+          Consider an input token $x$, a set of expert neural networks $\{E_1, E_2, ..., E_n\}$, and a router network $R$. The output $y$ of an SMoE layer is computed as a weighted sum of the expert network outputs, which can be expressed as:</p>
+        <p class="has-text-centered">$$y = \sum_{i=1}^{n} R(x)_i \cdot E_i(x), \quad E(x) = (\sigma(xW_{gate}) ⊙ (xW_{up}))W_{down},$$</p>
+        <p>where Pi(x) represents the $i$th expert routing score from $R$, and $E_i(x)$ denotes the $i$th expert network output.</p>
+        <p id="Fig1" class="has-text-centered" style="font-style: italic;"><img src="./static/images/General-SMoE-Architecture.png" style="width: 80%; padding-bottom: 2em;"/></br>
+          <b>Figure 1.</b> General SMoE architecture.</p>
+        <p>This architecture extends to recent models like Qwen <a href="#Ref1">[1]</a> and Mixtral <a href="Ref2">[2]</a>, which adopt the
+          LLaMA <a href="#Ref3">[3]</a> structure. The feed-forward network (FFN) in each expert implements three linear layers, where element-wise multiplication
+          $\odot$ operates with weight matrices $W_{up}, W_{gate} \in \mathbb{R}^{d_h\times d_m}, W_{down} \in \mathbb{R}^{d_m\times d_h}$ , and Sigmoid Linear Unit (SiLU) activation function $\sigma$. 
+          The routing implementation employs an efficient top-k strategy to select experts with the highest logits from linear input transformation. 
+          A subsequent softmax operation on these k largest logits enables sparse expert activation, which reduces computational overhead. This selective mechanism is formulated as follows:</p>
+        <p class="has-text-centered">$$P(x) = \text{softmax}(\text{topK}(R(x))) = \text{softmax}(\text{topK}(xW_R)),$$</p>
+        <p>where $R(x)$ represents routing-logits and WR denotes the learnable parameter matrix. This sparsely activated architecture enables efficient scaling with preserved performance
+          through selective computation. In turn, this mechanism allows the SMoE model to optimize computational efficiency and task performance through focused expert utilization.</p>
+      </div>
+    </div>
+    <h3 style="text-indent: -0.35em; padding-bottom: 1em;">Expert Pruning and Merging</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>This section reviews existing methods for expert reduction in SMoE architectures.</p>
+        <p id="Tab1" class="has-text-centered" style="font-style: italic;"><img src="./static/images/table1_comparison_of_moe_compression.png" style="width: 60%; padding-bottom: 2em;"/></br>
+          <b>Table 1.</b> A Comparison of different approaches for reducing the number of experts in SMoE.</p>
+        <li><b>TSEP (Task Specific Expert Pruning)</b> <a href="#Ref4">[4]</a>: It reduces active experts through iterative fine-tuning
+          for specific downstream tasks. Although effective, this approach requires extensive computational resources and time
+          for fine-tuning, which limits its applicability to large-scale
+          models.</li>
+        <li><b>O-prune (Output-based Pruning)</b> <a href="#Ref5">[5]</a>: It is retraining-free and taskagnostic expert reduction in zero-shot settings.
+          The method determines expert retention counts per layer and evaluates
+          all possible expert combinations to select configurations
+          that minimize output deviation from the original model.
+          However, this approach discards potential knowledge from
+          pruned experts. Moreover, its computational requirements
+          become prohibitive for large expert counts. For example,
+          a 50% reduction in Qwen’s 60 experts requires evaluation
+          of approximately $C(60, 30) ≈ 10^{18}$ combinations per layer.</li>
+        <li><b>S-prune (Router score-based Pruning)</b> <a href="#Ref6">[6]</a>: It is an efficient expert trimming technique which based on router scores. This
+          method accumulates global router-scores $P(x)$ and retains
+          top-scoring experts, which offer enhanced flexibility over
+          <i>O-prune</i> by allowing variable expert retention across layers.</li>
+        <li><b>F-prune (Frequency-based Pruning)</b>: This is a method adheres
+          to the same methodology as <i>S-prune</i> while employs frequency as the criterion for pruning experts.</li>
+        <li><b>M-SMoE (Merge-SMoE)</b> <a href="#Ref7">[7]</a>: It proposes a three-step pipeline for expert merging in
+          SMoE models. It first selects dominant experts based on
+          activation frequency to decide which experts to retain in
+          each layer, then uses router logits $R(x)$ to group experts,
+          followed by frequency-based merging.</li>
+        <p id="Fig2" class="has-text-centered" style="font-style: italic; padding-top: 2em;"><img src="./static/images/pruningvsmerging.png" style="width: 70%; padding-bottom: 2em;"/></br>
+          <b>Figure 2.</b> Comparison of expert pruning and merging strategies.</p>
+      </div>
+    </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title" style="text-indent: -0.35em;">Methodology</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>Our observation is that the key role in expert merging scenario is to <b>correctly identify similar experts</b> rather than using a complex merging method.
+        First, we will start from the problem definition to introduce some notation. Next we elaborate how we cluster those experts, and merge them at the end.</p>
+      </div>
+    </div>
+    <h3 style="text-indent: -0.35em; padding-bottom: 1em;">Problem Definition</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>In this study, we address the challenge of reducing the space complexity of an SMoE model through a process termed
+          <i>expert merging</i>. This process consolidates existing experts in an SMoE layer into a smaller set while preserving the
+          model’s performance. Each SMoE layer initially contains $n$ experts. We aim to merge these
+          experts into $r$ clusters, where $r$ represents the target number of experts after merging.</p>
+        <p>For the $i$-th cluster, denoted as $C_i = \{E^i_0 , E^i_1, . . . , E^i_{|C_i|}\}$, $|C_i|$ represents the number of
+          original experts assigned to this cluster. Unlike conventional model merging with predefined element combinations, expert merging in an SMoE
+          necessitates a two-phase procedure due to its flexible solution space: <b>first grouping experts into clusters, then merging
+          within each cluster.</b> During the merging phase, experts
+          within each cluster combine into a single new expert, which
+          reduces the total number of experts to $r$. The distribution of original experts across clusters satisfies $\sum_{i = 1}^r|C_i| = n$ which ensures that all original experts are accounted for in the merging process.</p>
+        </div>
+    </div>
+    <h3 style="text-indent: -0.35em; padding-bottom: 1em;">Hierarchical Clustering of Experts</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>The primary objective of expert merging process is to minimize functional divergence between the compressed and
+          original models. Motivated by evidence that output similarity correlates with functional equivalence <a href="#Ref8">[8-9]</a>, we propose
+          utilizing average expert outputs over a calibration dataset $\mathcal{D}_{cal}$ with $T$ tokens. Specifically, for
+          expert $E_j$ , the representative vector computation follows:</p>
+        <p class="has-text-centered">$$o_j := \mathbb{E}_{x∼\mathcal{D}_{cal}}[E_j (x)] = \frac 1 T \sum^T_{x\in\mathcal{D}_{cal}}E(x).$$</p>
+        <p>With a reliable expert similarity metric established, the subsequent step involves clustering SMoE experts into $r$ groups
+          for the merging process. To achieve this objective, we employ Hierarchical Clustering (HC) as the core mechanism
+          for grouping experts based on its capability to dynamically adapt cluster assignments while maintaining initialization robustness.</p>
+        <p id="Fig3" class="has-text-centered" style="font-style: italic; padding-top: 2em;"><img src="./static/images/hierarchical-clustering-figure-2.png" style="width: 70%; padding-bottom: 2em;"/></br>
+          <b>Figure 3.</b> Illustration of the proposed hierarchical clustering strategy based on expert outputs. Each blue circle denotes the outputs
+          of an expert in the embedding space. Hierarchical clustering would iteratively group the expert clusters with minimum cluster distance.</p>
+        <p>Unlike static partitioning methods, HC combines experts through a bottom-up agglomerative process: starting with each expert as a singleton cluster, it recursively
+          combines the most functionally similar pairs while continuously recalculating inter-cluster distances. This iterative recalibration reflects current functional affinities of evolving
+          clusters and enables adaptation to emergent behaviors, a capability absent in static partitioning based approaches.</p>
+        <p>The clustering process requires two essential components:  (1) a distance metric for measuring
+          differences between expert output vectors, and (2) a linkage strategy for determining inter-cluster distances. Our
+          implementation uses the Euclidean distance $d(e_i, e_j) = ||e_i − e_j||^2$, where $e_i$ and $e_j$ represent the metric values for computing
+          distances between experts $i$ and $j$. For the linkage strategy, we investigate three methods: single, complete, and average:</p>
+        <p class="has-text-centered">
+          $$\begin{align*}
+            \text{single: }\quad\min_{a\in A, b\in B}d(a,b), \\
+            \text{complete: }\quad\max_{a\in A, b\in B}d(a,b), \\
+            \text{average: }\quad \frac{1}{|A|\cdot |B|}\sum_{a\in A}\sum_{b\in B}d(a, b),
+          \end{align*}$$
+        </p>
+        <p>where $A$ and $B$ represent clusters, and $a$ and $b$ denote experts that belong to these clusters. Single linkage defines
+          cluster distances through the closest pair of elements, while complete linkage uses the maximum distance and often produces overly compact clusters that miss subtle similarities.
+          Average linkage considers the mean pairwise distance between cluster elements and achieves an optimal balance.
+          As a result, the proposed HC-SMoE framework employs <b>average-linkage HC</b> to optimize the trade-off between intracluster homogeneity and inter-cluster distinctiveness.</p>
+       </div>
+    </div>
+    <h3 style="text-indent: -0.35em; padding-bottom: 1em;">Expert Merging within Clusters</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>After clustering, the final step is to merge experts within each cluster to form a new expert. We adopt a frequency-based merging strategy,
+          which computes a weighted average of the original experts in each cluster based on their activation frequencies over the calibration dataset $\mathcal{D}_{cal}$.
+          For cluster $C_i = \{E^i_0 , E^i_1, . . . , E^i_{|C_i|}\}$, the merged expert $E^{new}_i$ is defined as:</p>
+        <p class="has-text-centered">$$E^{new}_i (x) := \sum_{j=0}^{|C_i|} \alpha^i_j E^i_j (x), \quad \alpha^i_j := \frac{f^i_j}{\sum_{k=0}^{|C_i|} f^i_k},$$</p>
+        <p>where $f^i_j$ denotes the activation frequency of expert $E^i_j$ over $\mathcal{D}_{cal}$. This weighted averaging approach ensures that more frequently activated experts
+          contribute proportionally more to the merged expert, preserving their influence in the compressed model.</p>
+        <p>While we also found that merging strategy selection only has marginal impact when utilizing a general-purpose calibration dataset, the key role is to correctly cluster the experts into groups.</p>
+        <p id="Tab2" class="has-text-centered" style="font-style: italic; padding-top: 2em;"><img src="./static/images/table7-qwen-merging.png" style="width: 90%; padding-bottom: 2em;"/></br>
+          <b>Table 2.</b> Various merging methods with HC average linkage based on expert outputs. <b>Fix-Dom</b> represents fixed-dominant merging
+          described in paper's Section 3.2.3. <b>Avg</b> in the Merge column denotes the average score among all the merging strategy under same model settings.</p>
+        
+        <p>In summary, our HC-SMoE framework effectively reduces the number of experts in SMoE models through a two-phase process of hierarchical clustering based on expert outputs,
+          followed by frequency-weighted merging within clusters. This approach maintains functional integrity while achieving significant parameter reduction without retraining.</p>
+      </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title" style="text-indent: -0.35em;">Experiments</h2>
+    <h3 class="" style="text-indent: -0.35em; padding-bottom: 1em;">Experimental Setup</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p>We conduct experiments on two SMoE models: Qwen1.5-
+          MoE-A2.7B (henceforth Qwen) <a href="#Ref1">[1]</a> and Mixtral 8x7B <a href="#Ref2"></a>. For Qwen, we explore two
+          levels of reduction: merging the number of experts from
+          60 to 45 and further to 30 per layer. This corresponds to
+          a reduction in parameters from 14.3B to 11.2B (denoted
+          as Qwen 45x2.7B), and subsequently to 8.1B (denoted as
+          Qwen 30x2.7B). Similarly, Mixtral 8x7B undergoes reduction from eight to six experts and then to four experts per
+          layer, decreasing the total parameters from 46.7B to 35.6B (denoted as Mixtral 6x7B) and further to 24.3B (denoted as
+          Mixtral 4x7B). This graduated approach enables the evaluation of expert merging impact at different levels of model
+          reduction. Experiments on Mixtral 8x7B and Qwen are conducted on eight NVIDIA A100 GPUs and four NVIDIA V100 GPUs, respectively.</p>
+        <p>All
+          baselines and HC-SMoE require a calibration dataset to
+          estimate input statistics. This dataset is constructed by sampling from the C4 corpus <a href="#Ref10">[10]</a>, concatenating
+          extracted text into $32$ sequences of $2,048$ tokens each. To further validate the independence of HC-SMoE from the calibration dataset, we construct two additional datasets from
+          MATH <a href="Ref11">[11]</a> and CodeQA <a href="#Ref12">[12]</a>. Please refer to paper's Appendix B.3 for more details.</p>
+      </div>
+    </div>
+    <h3 style="text-indent: -0.35em; padding-bottom: 1em;">Experimental Results</h3>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p id="Tab3" class="has-text-centered" style="font-style: italic; padding-top: 2em;"><img src="./static/images/qwen-result.png" style="width: 90%; padding-bottom: 2em;"/></br>
+          <b>Table 3.</b> Zero-shot comparison of Qwen1.5-MoE-A2.7B-Chat: original architecture v.s. reduced versions with 45 and 30 experts per
+          layer. HC-SMoE (avg) stands for average linkage when performing hierarchical clustering. HC-SMoE (single) stands for single linkage.</p>
+        <p id="Tab4" class="has-text-centered" style="font-style: italic; padding-top: 2em;"><img src="./static/images/mixtral-result.png" style="width: 90%; padding-bottom: 2em;"/></br>
+          <b>Table 4.</b> Zero-shot comparison of Mixtral 8x7B: original architecture v.s. reduced versions with six and four experts per layer.</p>
+      </div>
+    </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title" style="text-indent: -0.35em;">Poster</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified scroll-wrapper">
+        <p class="has-text-centered" style="font-style: italic;"><embed src="./static/images/hc-smoe-poster.pdf" width="980pt" height="560pt"></p>
+      </div>
+    </div>
+</section>
+
+<section class="section" id="reference">
+  <div class="container is-max-desktop content">
+    <h2 class="title">References</h2>
+    <p id="Ref1">[1] Qwen Team. Qwen1.5-moe: Matching 7b model performance with 1/3 activated parameters. February 
+      2024. URL <a href="https://qwenlm.github.io/blog/qwen-moe/">https://qwenlm.github.io/blog/qwen-moe/</a></p>
+    <p id="Ref2">[2] Albert Q. Jiang, Alexandre Sablayrolles, Antoine Roux, Arthur Mensch, Blanche Savary, Chris Bamford, 
+      Devendra Singh Chaplot, Diego de las Casas, Emma Bou Hanna, Florian Bressand, Gianna Lengyel, Guillaume Bour, 
+      Guillaume Lample, Lélio Renard Lavaud, Lucile Saulnier, Marie-Anne Lachaux, Pierre Stock, Sandeep Subramanian, 
+      Sophia Yang, Szymon Antoniak, Teven Le Scao, Théophile Gervet, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed.
+      Mixtral of Experts. arXiv preprint arXiv:2401.04088, 2024. </p>
+    <p id="Ref3">[3] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, 
+      Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, 
+      Armand Joulin, Edouard Grave and Guillaume Lample. LLaMA: Open and Efficient Foundation Language Models. 
+      arXiv preprint arXiv:2302.13971, 2023.</p>
+    <p id="Ref4">[4] Tianyu Chen, Shaohan Huang, Yuan Xie, Binxing Jiao, Daxin Jiang, Haoyi Zhou, Jianxin Li and Furu Wei.
+      Task-Specific Expert Pruning for Sparse Mixture-of-Experts. arXiv preprint arXiv:2206.00277, 2022.</p>
+    <p id="Ref5">[5] Xudong Lu, Qi Liu, Yuhui Xu, Aojun Zhou, Siyuan Huang, Bo Zhang, Junchi Yan and Hongsheng Li.
+      Not All Experts are Equal: Efficient Expert Pruning and Skipping for Mixture-of-Experts Large Language Models. 
+      In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL), 2024.</p>
+    <p id="Ref6">[6] Shwai He, Daize Dong, Liang Ding and Ang Li. Demystifying the compression of mixture-of-experts through a unified framework. 
+      arXiv preprint arXiv:2406.02500, 2024.</p>
+    <p id="Ref7">[7] Pingzhi Li, Zhenyu Zhang, Prateek Yadav, Yi-Lin Sung, Yu Cheng, Mohit Bansal and Tianlong Chen. 
+      Merge, Then Compress: Demystify Efficient SMoE with Hints from Its Routing Policy. In Proceedings of the Twelfth International Conference on Learning Representations (ICLR), 2024.</p>
+    <p id="Ref8">[8] Yixuan Li, Jason Yosinski, Jeff Clune, Hod Lipson and John Hopcroft. Convergent Learning: Do different neural networks learn the same representations?
+        In Proceedings of the Fourth International Conference on Learning Representations (ICLR), 2016.</p>
+    <p id="Ref9">[9] George Stoica, Daniel Bolya, Jakob Bjorner, Pratik Ramesh, Taylor Hearn and Judy Hoffman. 
+      ZipIt! Merging Models from Different Tasks without Training. In Proceedings of the Twelfth International
+      Conference on Learning Representations (ICLR), 2024.</p>
+    <p id="Ref10">[10] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li and Peter J. Liu.
+      Exploring the limits of transfer learning with a unified text-to-text transformer. Journal of machine learning research, 21
+      (140):1–67, 2020.</p>
+    <p id="Ref11">[11] Dan Hendrycks, Collin Burns, Saurav Kadavath, Akul Arora, Steven Basart, Eric Tang, Dawn Song and Jacob Steinhardt.
+      Measuring mathematical problem solving with the math dataset. In Proceedings of Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (Round 2) (NeurIPS), 2021. </p>
+    <p id="Ref12">[12] Chenxiao Liu and Xiaojun Wan. Codeqa: A question answering dataset for source code comprehension. In Findings of the Association for Computational Linguistics: EMNLP 2021, pp.
+      2618–2632, 2021.</p>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{chen2025hcsmoe,
+      title={Retraining-Free Merging of Sparse MoE via Hierarchical Clustering}, 
+      author={I-Chun Chen and Hsu-Shen Liu and Wei-Fang Sun and Chen-Hao Chao and Yen-Chang Hsu and Chun-Yi Lee},
+      year={2025},
+      booktitle={International Conference on Machine Learning (ICML)}
+}
+    </code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            The template of this page is based on the
+            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> website.
+            You are free to borrow the <a href="https://github.com/chen-hao-chao/ebflow">code</a> of this website,
+            we just ask that you link back to this page in the footer.
+            Please remember to remove the analytics code included in the header of the website which
+            you do not want on your website.
+          </p>
+          <p>
+            This website is licensed under a <a rel="license"
+              href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+              Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
